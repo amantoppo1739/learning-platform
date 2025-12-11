@@ -81,8 +81,6 @@ export const authConfig: NextAuthConfig = {
   session: {
     strategy: "jwt",
   },
-  // Allow users to link multiple OAuth providers with the same email
-  allowDangerousEmailAccountLinking: true,
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
