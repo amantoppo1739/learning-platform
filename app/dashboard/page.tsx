@@ -72,9 +72,9 @@ export default async function DashboardPage() {
   const videosWatched = userActivity.filter((a) => a.type === "video").length;
 
   const languagesLearning = new Set<string>();
-  userChatSessions.forEach((c) => languagesLearning.add(c.language));
-  userQuizResults.forEach((q) => languagesLearning.add(q.language));
-  userActivity.forEach((a) => {
+  userChatSessions.forEach((c: { language: string }) => languagesLearning.add(c.language));
+  userQuizResults.forEach((q: { language: string }) => languagesLearning.add(q.language));
+  userActivity.forEach((a: { language: string | null }) => {
     if (a.language) languagesLearning.add(a.language);
   });
 
@@ -83,16 +83,18 @@ export default async function DashboardPage() {
     string,
     { chats: number; quizzes: number; lastActivity: Date | null }
   >();
-  userChatSessions.forEach((c) => {
-    const entry = languageMap.get(c.language) || { chats: 0, quizzes: 0, lastActivity: null };
+  userChatSessions.forEach((c: { language: string; updatedAt: Date }) => {
+    const entry =
+      languageMap.get(c.language) || { chats: 0, quizzes: 0, lastActivity: null };
     entry.chats += 1;
     entry.lastActivity = entry.lastActivity
       ? new Date(Math.max(entry.lastActivity.getTime(), c.updatedAt.getTime()))
       : c.updatedAt;
     languageMap.set(c.language, entry);
   });
-  userQuizResults.forEach((q) => {
-    const entry = languageMap.get(q.language) || { chats: 0, quizzes: 0, lastActivity: null };
+  userQuizResults.forEach((q: { language: string; completedAt: Date }) => {
+    const entry =
+      languageMap.get(q.language) || { chats: 0, quizzes: 0, lastActivity: null };
     entry.quizzes += 1;
     entry.lastActivity = entry.lastActivity
       ? new Date(Math.max(entry.lastActivity.getTime(), q.completedAt.getTime()))
