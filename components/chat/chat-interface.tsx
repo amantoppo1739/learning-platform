@@ -511,18 +511,6 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
         {/* Chat Header */}
         <div className="border-b border-border/40 px-4 py-2 flex items-center justify-between bg-background/95">
           <div className="flex items-center gap-2">
-            {messages.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={startNewChat}
-                className="gap-2"
-              >
-                <Send className="w-4 h-4" />
-                New Chat
-              </Button>
-            )}
-            {/* Action Buttons - Always Visible */}
             <Button
               onClick={openVideosSidebar}
               variant={sidebarMode === "videos" ? "default" : "outline"}

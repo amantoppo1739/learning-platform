@@ -4,6 +4,8 @@ import { useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Brain, Sparkles, Video, Trophy, ArrowRight } from "lucide-react";
+import BackgroundGrid from "@/components/ui/background-grid";
+import SpotlightCard from "@/components/ui/spotlight-card";
 
 // Lightweight tilt card for micro-interactions
 function TiltCard({
@@ -106,14 +108,14 @@ function TiltTitle({
 
 export default function Home() {
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-background/80 p-8">
+    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-background/80 bg-[radial-gradient(ellipse_at_top,_rgba(59,130,246,0.18),_transparent_45%)] p-8">
+      <BackgroundGrid />
       {/* Ambient background blobs */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-32 -top-32 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute right-0 top-16 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
         <div className="absolute -bottom-24 left-1/3 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl" />
-          </div>
-          
+      </div>
       <div className="z-10 w-full max-w-5xl text-center space-y-10">
         <div className="space-y-4 flex flex-col items-center">
           <TiltCard className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 shadow-sm shadow-primary/10 w-fit">
@@ -121,13 +123,13 @@ export default function Home() {
             <span className="text-sm font-medium">Powered by Groq (Llama 3.3)</span>
           </TiltCard>
 
-          <TiltTitle className="inline-block animate-float-soft" max={10} scale={1.05}>
-            <h1 className="text-6xl font-bold tracking-tight drop-shadow-[0_8px_25px_rgba(0,0,0,0.35)]">
+          <TiltTitle className="inline-block animate-float-soft hero-glow" max={10} scale={1.05}>
+            <h1 className="relative text-6xl font-bold tracking-tighter drop-shadow-[0_8px_25px_rgba(0,0,0,0.35)]">
               <span className="text-shine relative inline-block hover-glow">
                 Synta
                 <span className="absolute inset-0 blur-2xl opacity-40 bg-gradient-to-r from-blue-500/40 via-purple-400/40 to-white/30 -z-10" />
               </span>
-          </h1>
+            </h1>
           </TiltTitle>
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -163,13 +165,15 @@ export default function Home() {
             { label: "Live streaming", desc: "Chat, code, quiz—no page reloads" },
             { label: "Personalized picks", desc: "Videos and quizzes by topic" },
           ].map((item) => (
-            <TiltCard
+            <SpotlightCard
               key={item.label}
-              className="rounded-lg border border-border/40 bg-card/60 px-4 py-3 text-left backdrop-blur-sm shadow-sm shadow-black/20"
+              radius={350}
+              strength={0.12}
+              className="rounded-xl border border-white/10 bg-zinc-900/50 px-4 py-4 text-left backdrop-blur-sm shadow-lg shadow-black/25"
             >
               <p className="text-sm font-semibold">{item.label}</p>
               <p className="text-xs text-muted-foreground mt-1">{item.desc}</p>
-            </TiltCard>
+            </SpotlightCard>
           ))}
         </div>
 
@@ -192,15 +196,14 @@ export default function Home() {
               desc: "Test yourself with AI-generated quizzes tailored to your progress.",
             },
           ].map((feature) => (
-            <TiltCard
+            <SpotlightCard
               key={feature.title}
-              className="group relative overflow-hidden rounded-lg border border-border/40 bg-card/60 backdrop-blur-sm p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10"
+              className="group relative overflow-hidden rounded-xl"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <feature.icon className="h-10 w-10 mb-4 text-primary transition-transform duration-300 group-hover:scale-110" />
               <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
-            </TiltCard>
+            </SpotlightCard>
           ))}
         </div>
       </div>
@@ -223,6 +226,22 @@ export default function Home() {
   .hover-glow:hover {
     transform: scale(1.02);
     transition: transform 0.25s ease;
+  }
+  .hero-glow {
+    position: relative;
+  }
+  .hero-glow::before {
+    content: "";
+    position: absolute;
+    inset: -80px;
+    z-index: -1;
+    background: radial-gradient(circle at 50% 40%, rgba(59, 130, 246, 0.25), transparent 55%);
+    filter: blur(40px);
+    opacity: 0.9;
+    transition: opacity 0.4s ease;
+  }
+  .hero-glow:hover::before {
+    opacity: 1;
   }
   .hover-glow::after {
     content: "";
