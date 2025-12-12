@@ -132,12 +132,18 @@ export default function LearnPage() {
                 <ArrowLeft className="w-4 h-4" />
                 Change Language
               </Button>
-              <Link href="/dashboard">
+              {/* <Link href="/dashboard">
                 <Button variant="outline" size="sm" className="gap-2">
-                  <Home className="w-4 h-4" />
-                  Back to Dashboard
+                  <ArrowLeft className="w-4 h-4" />
+                  Dashboard
                 </Button>
               </Link>
+              <Link href="/">
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Home className="w-4 h-4" />
+                  Home
+                </Button>
+              </Link> */}
               <div className="h-6 w-px bg-border/40" />
               <div className="flex items-center gap-3">
                 <div
@@ -171,13 +177,31 @@ export default function LearnPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
-            Choose Your Language
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Start your programming journey with AI-powered guidance
-          </p>
+        <div className="container mx-auto px-4 py-6 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
+                Choose Your Language
+              </h1>
+              <p className="text-muted-foreground mt-2">
+                Start your programming journey with AI-powered guidance
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link href="/dashboard">
+                <Button variant="outline" size="sm" className="gap-2">
+                  <ArrowLeft className="w-4 h-4" />
+                  Dashboard
+                </Button>
+              </Link>
+              <Link href="/">
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Home className="w-4 h-4" />
+                  Home
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -217,7 +241,7 @@ export default function LearnPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-yellow-500" />
-                Powered by Google Gemini AI
+                Powered by Groq (Llama 3.3)
               </CardTitle>
               <CardDescription>
                 Get instant help with code examples, explanations, debugging, and best

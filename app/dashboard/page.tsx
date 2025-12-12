@@ -148,7 +148,15 @@ export default async function DashboardPage() {
             <Brain className="h-6 w-6" />
             <span className="font-semibold text-lg">AI Learning Platform</span>
           </div>
-          <UserNav />
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="rounded-full border border-border/60 px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent/40 transition-colors"
+            >
+              Home
+            </Link>
+            <UserNav />
+          </div>
         </div>
       </header>
 
