@@ -28,6 +28,7 @@ export function QuizInterface({ topic, language, onClose }: QuizInterfaceProps) 
   const [quizStarted, setQuizStarted] = useState(false);
 
   const generateQuiz = async () => {
+    if (loading) return; // Prevent double-submit (saves tokens / avoids rate limits)
     setLoading(true);
     try {
       const response = await fetch("/api/quiz/generate", {
@@ -45,7 +46,8 @@ export function QuizInterface({ topic, language, onClose }: QuizInterfaceProps) 
         setQuestions(data.quiz.questions);
         setQuizStarted(true);
       } else {
-        alert("Failed to generate quiz. Please try again.");
+        const msg = data?.message || "Please try again.";
+        alert(`Failed to generate quiz. ${msg}`);
         onClose();
       }
     } catch (error) {

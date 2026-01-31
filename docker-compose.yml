@@ -1,0 +1,44 @@
+# Local dev parity: app + PostgreSQL (Learning Platform / Synta)
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    # Explicit DNS so the container can reach OAuth/APIs (fixes ETIMEDOUT on some hosts)
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://synta:synta@db:5432/synta
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-dev-secret-change-in-prod}
+      - AUTH_TRUST_HOST=true
+    env_file:
+      - .env.example
+      - .env.local
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: synta
+      POSTGRES_PASSWORD: synta
+      POSTGRES_DB: synta
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U synta -d synta"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

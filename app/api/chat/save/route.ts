@@ -22,9 +22,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate title from first user message
+    // Generate title from first user message (support parts (v6) or content (legacy))
     const firstUserMessage = messages.find((m: any) => m.role === "user");
-    const title = firstUserMessage?.content?.slice(0, 50) || "New Chat";
+    const firstText =
+      firstUserMessage?.content ??
+      (Array.isArray(firstUserMessage?.parts)
+        ? firstUserMessage.parts
+            .filter((p: any) => p.type === "text")
+            .map((p: any) => p.text)
+            .join("")
+        : "");
+    const title = firstText?.slice(0, 50) || "New Chat";
 
     if (sessionId) {
       // Update existing session

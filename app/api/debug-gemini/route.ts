@@ -15,13 +15,14 @@ export async function GET() {
   try {
     const groq = createGroq({ apiKey });
     const { text } = await generateText({
-      model: groq("llama-3.3-70b-versatile"),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Groq provider types (V1) vs ai (V2/V3); runtime compatible
+      model: groq("llama-3.1-8b-instant") as any,
       prompt: "Say 'Hello! I am working correctly.' in one sentence.",
     });
 
     return Response.json({ 
       success: true, 
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       provider: "Groq",
       response: text,
       message: "✅ Groq is working! Your chat should work now."

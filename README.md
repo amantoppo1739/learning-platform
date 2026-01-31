@@ -1,6 +1,6 @@
 # Synta — AI-Powered Programming Tutor
 
-An interactive AI-powered tutor (Groq Llama 3.3) for learning programming through AI chat, curated videos, and generated quizzes.
+An interactive AI-powered tutor (Groq Llama 3.1 8B) for learning programming through AI chat, curated videos, and generated quizzes.
 
 ## 🚀 Tech Stack
 
@@ -11,7 +11,7 @@ An interactive AI-powered tutor (Groq Llama 3.3) for learning programming throug
 - **Authentication:** NextAuth.js v5
 - **Styling:** Tailwind CSS
 - **UI Components:** Shadcn/UI (Radix Primitives)
-- **AI:** Vercel AI SDK + Groq (Llama 3.3 70B)
+- **AI:** Vercel AI SDK + Groq (Llama 3.1 8B)
 - **Videos:** YouTube Data API v3
 
 ## 📁 Project Structure
@@ -31,10 +31,16 @@ An interactive AI-powered tutor (Groq Llama 3.3) for learning programming throug
 │   ├── schema.ts        # Drizzle schema
 │   └── utils.ts         # Utility functions
 ├── drizzle/             # Database migrations (auto-generated)
-└── drizzle.config.ts    # Drizzle configuration
+├── drizzle.config.ts    # Drizzle configuration
+├── infra/               # Terraform (VPC, ECS Fargate, IAM, S3 state)
+├── Dockerfile           # Multi-stage container build
+├── docker-compose.yml   # App + PostgreSQL for local dev parity
+└── SETUP.md             # Setup, development & deployment guide
 ```
 
 ## 🛠️ Setup Instructions
+
+For the full guide (setup, development, deployment, Docker, CI/CD, Terraform, observability), see **[SETUP.md](./SETUP.md)**.
 
 ### 1. Clone and Install
 
@@ -53,7 +59,7 @@ cp .env.example .env.local
 Required credentials:
 - **DATABASE_URL**: Get from [Neon](https://neon.tech) (free tier available)
 - **NEXTAUTH_SECRET**: Generate with `openssl rand -base64 32`
-- **GROQ_API_KEY**: Get from [Groq Console](https://console.groq.com/) (Llama 3.3)
+- **GROQ_API_KEY**: Get from [Groq Console](https://console.groq.com/) (Llama 3.1 8B)
 - **YouTube API Key**: Get from [Google Cloud Console](https://console.cloud.google.com)
 - **OAuth Credentials**: Set up Google/GitHub OAuth apps
 
@@ -73,6 +79,16 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### 5. Run with Docker (optional)
+
+For local dev parity with app + PostgreSQL in containers:
+
+```bash
+docker compose up --build
+```
+
+App: [http://localhost:3000](http://localhost:3000) · DB: `localhost:5432` (user: `synta`, db: `synta`). See `.env.example` for `DATABASE_URL` when using Docker.
 
 ## 📊 Database Schema
 
@@ -116,6 +132,14 @@ npm run db:generate  # Generate Drizzle migrations
 npm run db:migrate   # Apply migrations to database
 npm run db:studio    # Open Drizzle Studio (GUI)
 ```
+
+## 🚢 Deployment & DevOps
+
+- **Docker**: Multi-stage `Dockerfile` (Node 20 Alpine) and `docker-compose.yml` for app + PostgreSQL.
+- **CI/CD**: GitHub Actions (`.github/workflows/deploy.yml`) — lint & build on PRs; Docker build, Trivy scan, and push to GHCR on push to `main`/`master`.
+- **Infrastructure**: Terraform in `infra/` (VPC, ECS Fargate, IAM, CloudWatch logs, S3 state backend).
+- **Health**: `GET /api/health` for load balancers and monitoring.
+- **Full details**: Billing alarms, migrations, secrets, Grafana/CloudWatch, and step-by-step deployment are in [SETUP.md](./SETUP.md).
 
 ## 🤝 Contributing
 

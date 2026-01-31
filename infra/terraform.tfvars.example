@@ -1,0 +1,13 @@
+# Copy to terraform.tfvars and set values. Do not commit terraform.tfvars.
+
+aws_region   = "us-east-1"
+project_name = "learning-platform"
+environment  = "dev"
+
+# Image from GitHub Actions (GHCR) or ECR
+container_image = "ghcr.io/YOUR_ORG/learning-platform:latest"
+
+desired_count = 1
+cpu           = 512
+memory_mb     = 1024
+container_port = 3000

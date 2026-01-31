@@ -1,7 +1,8 @@
 "use client";
 
-import { useChat } from "ai/react";
-import { useEffect, useRef, useState } from "react";
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Send, Bot, User, Loader2, History, Youtube, Brain, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -159,17 +160,19 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
   const normalizedLang = language.toLowerCase();
   const syllabus = syllabi[normalizedLang] || syllabi.default;
 
-  const { messages, append, isLoading, error, setMessages } =
+  const transport = useMemo(
+    () => new DefaultChatTransport({ api: "/api/chat", body: { language } }),
+    [language]
+  );
+  const { messages, sendMessage, status, error, setMessages } =
     useChat({
-      api: "/api/chat",
-      body: {
-        language,
-      },
-      onError: (error) => {
-        console.error("Chat error:", error);
-        alert(`Error: ${error.message}`);
+      transport,
+      onError: (err) => {
+        console.error("Chat error:", err);
+        alert(`Error: ${err.message}`);
       },
     });
+  const isLoading = status === "submitted" || status === "streaming";
 
   // Ref for save function to access latest messages
   const savingRef = useRef(false);
@@ -310,10 +313,22 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
     setShowQuiz(false);
   };
 
+  // Helper: get text content from UIMessage (v6 uses parts; support legacy content for saved chats)
+  const getMessageText = (m: (typeof messages)[number]) => {
+    if ("content" in m && typeof (m as { content?: string }).content === "string")
+      return (m as { content: string }).content;
+    return (
+      m.parts
+        ?.filter((p): p is { type: "text"; text: string } => p.type === "text")
+        .map((p) => p.text)
+        .join("") ?? ""
+    );
+  };
+
   // Context warning based on total chars (rough heuristic)
   useEffect(() => {
     const totalChars =
-      messages.reduce((acc, m) => acc + (m.content?.length || 0), 0) +
+      messages.reduce((acc, m) => acc + getMessageText(m).length, 0) +
       (chatInputRef.current?.value.length || 0);
     if (totalChars > WARNING_CONTEXT_CHARS) {
       setContextWarning("Conversation is getting long; older context may be truncated.");
@@ -338,10 +353,7 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
     setInputError(null);
 
     // Add user message
-    await append({
-      role: "user",
-      content: input,
-    });
+    await sendMessage({ text: input });
     
     // Clear input
     if (chatInputRef.current) {
@@ -689,10 +701,10 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
                       )}
                     >
                       {message.role === "user" ? (
-                        <p className="whitespace-pre-wrap">{message.content}</p>
+                        <p className="whitespace-pre-wrap">{getMessageText(message)}</p>
                       ) : (
                         <MarkdownRenderer 
-                          content={message.content} 
+                          content={getMessageText(message)} 
                           isStreaming={isStreamingMessage}
                         />
                       )}

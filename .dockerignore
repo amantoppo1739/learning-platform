@@ -1,0 +1,27 @@
+# Dependencies and build artifacts
+node_modules
+.next
+.git
+.gitignore
+
+# Env and secrets (inject at runtime)
+.env
+.env.*
+!.env.example
+
+# IDE and OS
+.idea
+.vscode
+*.swp
+.DS_Store
+
+# Misc
+README.md
+*.md
+coverage
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# Drizzle generated (migrations run at deploy; schema is in lib/)
+drizzle

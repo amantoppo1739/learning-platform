@@ -1,5 +1,5 @@
 import { createGroq } from "@ai-sdk/groq";
-import { streamText } from "ai";
+import { convertToModelMessages, streamText } from "ai";
 import { auth } from "@/lib/auth";
 
 export const maxDuration = 30;
@@ -123,7 +123,19 @@ export async function POST(req: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const { messages, language = "python" } = await req.json();
+    const { messages: rawMessages, language = "python" } = await req.json();
+
+    // Trim to last N messages to stay within context limits and avoid rate/limit errors (saves tokens)
+    const MAX_MESSAGES = 24;
+    const rawList =
+      Array.isArray(rawMessages) && rawMessages.length > MAX_MESSAGES
+        ? rawMessages.slice(-MAX_MESSAGES)
+        : Array.isArray(rawMessages)
+          ? rawMessages
+          : [];
+
+    // useChat sends UIMessage[]; streamText expects ModelMessage[] — convert to fix "messages do not match ModelMessage[] schema"
+    const messages = await convertToModelMessages(rawList);
 
     // Validate language
     const selectedLanguage = language.toLowerCase();
@@ -143,15 +155,15 @@ export async function POST(req: Request) {
     }
     console.log("API Key present (length: " + apiKey.length + ")");
 
-    // Stream AI response using Groq with Llama 3.3 70B
-    // Groq provides extremely fast inference with generous free tier
-    console.log("Starting streamText with Groq (llama-3.3-70b-versatile)");
+    // Stream AI response using Groq (Llama 3.1 8B)
+    console.log("Starting streamText with Groq (llama-3.1-8b-instant)");
     const groq = createGroq({ apiKey });
     const result = streamText({
-      model: groq("llama-3.3-70b-versatile"),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Groq provider types (V1) vs ai streamText (V2/V3); runtime compatible
+      model: groq("llama-3.1-8b-instant") as any,
       system: systemPrompt,
       messages,
-      maxTokens: 2000,
+      maxOutputTokens: 2000,
       temperature: 0.7,
       onFinish: () => {
         console.log("Stream finished successfully on server");
@@ -161,8 +173,8 @@ export async function POST(req: Request) {
       },
     });
 
-    console.log("Returning result.toDataStreamResponse()");
-    return result.toDataStreamResponse();
+    console.log("Returning result.toUIMessageStreamResponse()");
+    return result.toUIMessageStreamResponse();
   } catch (error: any) {
     console.error("Chat API Error:", JSON.stringify(error, null, 2));
     if (error instanceof Error) {
@@ -175,7 +187,7 @@ export async function POST(req: Request) {
       return new Response(
         JSON.stringify({
           error: "Invalid API key",
-          message: "Your Gemini API key is invalid. Please check GEMINI_SETUP.md",
+          message: "Your Groq API key is invalid. Get one at https://console.groq.com/keys",
         }),
         { status: 401, headers: { "Content-Type": "application/json" } }
       );
