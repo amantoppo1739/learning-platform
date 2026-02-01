@@ -41,7 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 # drizzle
-drizzle/
+# Migration files should be committed for CI/CD to work
+# Uncomment below if you want to ignore snapshots (not recommended)
+# drizzle/meta/*_snapshot.json
 
 # terraform
 infra/*.tfstate
