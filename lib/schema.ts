@@ -66,19 +66,6 @@ export const verificationTokens = pgTable(
   })
 );
 
-// Learning paths for tracking user progress
-export const learningPaths = pgTable("learning_paths", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  language: text("language").notNull(), // e.g., "Python", "JavaScript"
-  currentTopic: text("current_topic"),
-  progress: integer("progress").default(0), // Percentage 0-100
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
 // Chat history for saving conversations
 export const chatSessions = pgTable("chat_sessions", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -123,8 +110,6 @@ export const activityLog = pgTable("activity_log", {
 // Export types for TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
-export type LearningPath = typeof learningPaths.$inferSelect;
-export type NewLearningPath = typeof learningPaths.$inferInsert;
 export type ChatSession = typeof chatSessions.$inferSelect;
 export type NewChatSession = typeof chatSessions.$inferInsert;
 export type QuizResult = typeof quizResults.$inferSelect;

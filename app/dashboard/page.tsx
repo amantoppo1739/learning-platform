@@ -24,6 +24,21 @@ export default async function DashboardPage() {
 
   const userId = session.user.id;
 
+  // Check if database is available
+  if (!db) {
+    // Return empty data if database is not configured
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-2">Database Not Configured</h1>
+          <p className="text-muted-foreground">
+            Please configure DATABASE_URL in your environment variables.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // Load summary stats
   const [userChatSessions, userQuizResults] = await Promise.all([
     db

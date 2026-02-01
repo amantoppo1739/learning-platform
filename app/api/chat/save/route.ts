@@ -34,8 +34,16 @@ export async function POST(req: Request) {
         : "");
     const title = firstText?.slice(0, 50) || "New Chat";
 
+    // Check if database is available
+    if (!db) {
+      return Response.json(
+        { error: "Database not configured", message: "Please configure DATABASE_URL" },
+        { status: 500 }
+      );
+    }
+
     if (sessionId) {
-      // Update existing session
+      // Update existing session (don't log activity on updates to avoid duplicates)
       const [updated] = await db
         .update(chatSessions)
         .set({
@@ -50,15 +58,6 @@ export async function POST(req: Request) {
           )
         )
         .returning();
-
-      // Log activity
-      await db.insert(activityLog).values({
-        userId: session.user.id,
-        type: "chat",
-        topic: title,
-        refId: updated.id,
-        language,
-      });
 
       return Response.json({ success: true, sessionId: updated.id });
     } else {

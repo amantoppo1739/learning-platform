@@ -1,7 +1,6 @@
 "use client";
 
-import { ExternalLink, Play } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Play } from "lucide-react";
 
 interface VideoCardProps {
   id: string;

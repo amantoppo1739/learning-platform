@@ -74,8 +74,7 @@ Output format (valid JSON only):
 {"questions":[{"question":"...","options":["A","B","C","D"],"correctAnswer":0,"explanation":"..."}, ...]}`;
 
     const { text } = await generateText({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Groq provider types vs ai; runtime compatible
-      model: groq("llama-3.1-8b-instant") as any,
+      model: groq("llama-3.1-8b-instant") as Parameters<typeof generateText>[0]["model"],
       prompt,
       maxOutputTokens: 4096,
       temperature: 0.6,

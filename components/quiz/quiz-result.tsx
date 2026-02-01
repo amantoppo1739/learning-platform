@@ -26,7 +26,7 @@ export function QuizResult({ questions, userAnswers, score, onRetry, onClose, on
   useEffect(() => {
     // Auto-save result when component mounts
     onSave();
-  }, []);
+  }, [onSave]);
 
   const getGrade = () => {
     if (percentage >= 90) return { text: "Excellent!", color: "text-green-500", emoji: "🎉" };

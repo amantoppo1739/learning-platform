@@ -13,6 +13,14 @@ export async function GET(req: Request) {
       );
     }
 
+    // Check if database is available
+    if (!db) {
+      return Response.json(
+        { error: "Database not configured", message: "Please configure DATABASE_URL" },
+        { status: 500 }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const language = searchParams.get("language");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -58,6 +66,14 @@ export async function POST(req: Request) {
       return Response.json(
         { error: "Unauthorized", message: "Please sign in to view chat history" },
         { status: 401 }
+      );
+    }
+
+    // Check if database is available
+    if (!db) {
+      return Response.json(
+        { error: "Database not configured", message: "Please configure DATABASE_URL" },
+        { status: 500 }
       );
     }
 

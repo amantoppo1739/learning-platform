@@ -21,6 +21,14 @@ export async function POST(req: Request) {
       );
     }
 
+    // Check if database is available
+    if (!db) {
+      return Response.json(
+        { error: "Database not configured", message: "Please configure DATABASE_URL" },
+        { status: 500 }
+      );
+    }
+
     // Save quiz result to database
     const [result] = await db
       .insert(quizResults)

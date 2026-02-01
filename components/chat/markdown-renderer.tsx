@@ -1,7 +1,7 @@
 "use client";
 
-import React, { memo, useMemo } from "react";
-import ReactMarkdown from "react-markdown";
+import React, { memo } from "react";
+import ReactMarkdown, { Components } from "react-markdown";
 import { CodeBlock } from "./code-block";
 
 interface MarkdownRendererProps {
@@ -10,8 +10,8 @@ interface MarkdownRendererProps {
 }
 
 // Memoized markdown components to avoid recreation
-const markdownComponents = {
-  code({ node, inline, className, children, ...props }: any) {
+const markdownComponents: Partial<Components> = {
+  code({ inline, className, children, ...props }: any) {
     const match = /language-(\w+)/.exec(className || "");
     const language = match ? match[1] : "";
 

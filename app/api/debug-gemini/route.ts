@@ -15,8 +15,7 @@ export async function GET() {
   try {
     const groq = createGroq({ apiKey });
     const { text } = await generateText({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Groq provider types (V1) vs ai (V2/V3); runtime compatible
-      model: groq("llama-3.1-8b-instant") as any,
+      model: groq("llama-3.1-8b-instant") as Parameters<typeof generateText>[0]["model"],
       prompt: "Say 'Hello! I am working correctly.' in one sentence.",
     });
 

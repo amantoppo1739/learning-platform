@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Send, Bot, User, Loader2, History, Youtube, Brain, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -176,11 +176,12 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
 
   // Ref for save function to access latest messages
   const savingRef = useRef(false);
+  const saveChatRef = useRef<(() => Promise<void>) | null>(null);
 
   // Save chat - only called after streaming ends
-  const saveChat = async () => {
+  const saveChat = useCallback(async () => {
     if (savingRef.current || messages.length === 0) return;
-    
+
     savingRef.current = true;
     try {
       const response = await fetch("/api/chat/save", {
@@ -204,17 +205,18 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
     } finally {
       savingRef.current = false;
     }
-  };
+  }, [messages, language, currentSessionId]);
+  saveChatRef.current = saveChat;
 
   // Save only when loading stops (streaming ended)
   useEffect(() => {
     if (!isLoading && messages.length > 0) {
-      const timer = setTimeout(saveChat, 3000);
+      const timer = setTimeout(() => saveChatRef.current?.(), 3000);
       return () => clearTimeout(timer);
     }
-  }, [isLoading]);
+  }, [isLoading, messages.length]);
 
-  const loadRecentChats = async () => {
+  const loadRecentChats = useCallback(async () => {
     try {
       const response = await fetch(`/api/chat/history?language=${language}&limit=5`);
       if (!response.ok) return;
@@ -223,12 +225,12 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
     } catch (error) {
       console.error("Failed to load recent chats:", error);
     }
-  };
+  }, [language]);
 
   // Load recent chats once on mount
   useEffect(() => {
     loadRecentChats();
-  }, []);
+  }, [loadRecentChats]);
 
   // Simple auto-scroll - only when a new message is added
   const prevMessageCount = useRef(0);
@@ -270,7 +272,7 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
     }
   };
 
-  const startNewChat = () => {
+  const _startNewChat = () => {
     setMessages([]);
     setCurrentSessionId(null);
     setShowHistory(false);
@@ -314,7 +316,7 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
   };
 
   // Helper: get text content from UIMessage (v6 uses parts; support legacy content for saved chats)
-  const getMessageText = (m: (typeof messages)[number]) => {
+  const getMessageText = useCallback((m: (typeof messages)[number]) => {
     if ("content" in m && typeof (m as { content?: string }).content === "string")
       return (m as { content: string }).content;
     return (
@@ -323,7 +325,7 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
         .map((p) => p.text)
         .join("") ?? ""
     );
-  };
+  }, []);
 
   // Context warning based on total chars (rough heuristic)
   useEffect(() => {
@@ -335,7 +337,7 @@ export function ChatInterface({ language }: ChatInterfaceProps) {
     } else {
       setContextWarning(null);
     }
-  }, [messages]);
+  }, [messages, getMessageText]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

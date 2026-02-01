@@ -159,8 +159,7 @@ export async function POST(req: Request) {
     console.log("Starting streamText with Groq (llama-3.1-8b-instant)");
     const groq = createGroq({ apiKey });
     const result = streamText({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Groq provider types (V1) vs ai streamText (V2/V3); runtime compatible
-      model: groq("llama-3.1-8b-instant") as any,
+      model: groq("llama-3.1-8b-instant") as Parameters<typeof streamText>[0]["model"],
       system: systemPrompt,
       messages,
       maxOutputTokens: 2000,

@@ -14,6 +14,14 @@ export async function POST(req: Request) {
       return Response.json({ error: "Type is required" }, { status: 400 });
     }
 
+    // Check if database is available
+    if (!db) {
+      return Response.json(
+        { error: "Database not configured", message: "Please configure DATABASE_URL" },
+        { status: 500 }
+      );
+    }
+
     await db.insert(activityLog).values({
       userId: session.user.id,
       type,
