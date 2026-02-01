@@ -2,7 +2,7 @@
 
 A full-stack web application that provides an interactive AI-powered tutoring experience for learning programming languages. Built with Next.js, TypeScript, and deployed on Vercel, featuring real-time AI chat, automated quiz generation, video integration, and comprehensive progress tracking.
 
-**Live Demo:** [Deployed on Vercel](#) *(Add your Vercel URL here)*
+**Live Demo:** https://synta.vercel.app
 
 ---
 
